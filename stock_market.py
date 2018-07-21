@@ -1,68 +1,53 @@
-class bid:
-    def __init__(self, price, visibility, time, trader):
-        self.price = price
-        self.visibility = visibility
-        self.time = time
-        self.trader = trader
+import datetime
 
-class bidBook:
-    def __init__(self):
-        self.bids = []
+class Bid:
+	def __init__(self, price, visible, trader):
+		self.price = price
+		self.visible = visible
+		self.time = None  # not yet submitted
+		self.trader = trader
 
-""" Build the buy side of the limit order bidBook """
-# Step 1. Sort the bids by price
-def sortByPrice(bidBook):
-    bidBook.bids.sort(key = lambda x: x.price, reverse=True)
-    return bidBook
+	def __str__(self):  # allows us to call str(my_bid) and print(my_bid)
+		return "{}\t{}\t{}\t{}".format(bid.price, bid.visibility, bid.time, bid.trader)
 
-def sortByVisibilityHelper(bids):
-    if len(bids) > 1:
-        for x,y in bids:
-            print(x, y)
+class Book:
+	def __init__(self):
+		self.bids = []
 
-sortByVisibilityHelper([])
+	def __str__(self):  # allows us to call str(my_bid) and print(my_bid)
+		return "\n".join(map(str, self.bids))
 
-# Step 2. Sort orders at the same price by visibility
-def sortByVisibility(bidBook):
-    if len(bidBook) < 2:
-        return bidBook
+	def sort_book(self):
+		# Comparator function for sorting
+		compare_bids = lambda bid: (bid.price, bid.visibility)
+		self.bids.sort(key = compare_bids, reverse = True)
 
+	def submit_bid(self, bid):
+		bid.time = datetime.datetime.now()
+		self.bids.append(bid)
+		self.sort_book()  # sort book every time a bid is added
 
-    pass
-
-""" General Functions """
-# Print the limit order book
-def printLimitOrderBook(bidBook):
-    print("Price\tVisibility\tTime\tTrader")
-    for bid in bidBook.bids:
-        print("{}\t{}\t\t{}\t{}".format(bid.price, bid.visibility, bid.time, bid.trader))
 
 def main():
-    # Initialize Variables
-    # Bids
-    florio_bid = bid(20.06, "Hidden", 9.35, "Florio")
-    amy_bid = bid(20.05, "Hidden", 9.30, "Amy")
-    dmitri_bid = bid(20.05, "", 9.33, "Dmitri")
-    brian_bid = bid(20.04, "", 9.31, "Brian")
-    chao_bid = bid(20.04, "", 9.32, "Chao")
-    esteban_bid = bid(20.03, "", 9.34, "Esteban")
+	# Bids
+	florio_bid = Bid(20.06, True, "Florio")
+	amy_bid = Bid(20.05, True, "Amy")
+	dmitri_bid = Bid(20.05, False, "Dmitri")
+	brian_bid = Bid(20.04, False, "Brian")
+	chao_bid = Bid(20.04, False, "Chao")
+	esteban_bid = Bid(20.03, False, "Esteban")
 
-    # BidBook
-    test_bidBook = bidBook()
-    test_bidBook.bids.append(amy_bid)
-    test_bidBook.bids.append(brian_bid)
-    test_bidBook.bids.append(chao_bid)
-    test_bidBook.bids.append(dmitri_bid)
-    test_bidBook.bids.append(esteban_bid)
-    test_bidBook.bids.append(florio_bid)
+	# Bid book
+	book = Book()
+	book.submit_bid(florio_bid)
+	book.sumbit_bid(amy_bid)
+	book.submit_bid(dmitri_bid)
+	book.submit_bid(brian_bid)
+	book.submit_bid(chao_bid)
+	book.submit_bid(esteban_bid)
 
-    # Testing
-    print("Original Book")
-    printLimitOrderBook(test_bidBook)
-    print()
-    test_bidBook = sortByPrice(test_bidBook)
-    print("Book after sort")
-    printLimitOrderBook(test_bidBook)
+	# Testing
+	print(book)
 
 if __name__ == '__main__':
-    main()
+	main()
