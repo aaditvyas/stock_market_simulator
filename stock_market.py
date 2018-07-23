@@ -25,22 +25,26 @@ class Book:
 		for priority in args:
 			new_priorities.append(priority)
 		self.priorities = new_priorities
-
 		if len(self.bids) > 1:
 			self.sort_book()
 
 	# Sorts book according to priorities
 	def sort_book(self):
-		# compare_bids_parameters = tuple(["bid."+x for x in self.priorities])
-		# print(compare_bids_parameters)
-		# # Comparator function for sorting
-		# compare_bids = lambda bid: compare_bids_parameters
-
+		# Bid books priotize high prices
 		if self.book_type == "bid":
-			compare_bids = lambda bid: (bid.price, bid.visibility)
+			if "price" in self.priorities and "visibility" in self.priorities:
+				compare_bids = lambda bid: (bid.price, bid.visibility)
+			else: # just price
+				compare_bids = lambda bid: (bid.price)
+
 			self.bids.sort(key = compare_bids, reverse = True)
+
+		# Offer books prioritize low prices
 		else:
-			compare_bids = lambda bid: (bid.price, -bid.visibility)
+			if "price" in self.priorities and "visibility" in self.priorities:
+				compare_bids = lambda bid: (bid.price, -bid.visibility)
+			else:
+				compare_bids = lambda bid: (bid.price)
 			self.bids.sort(key = compare_bids, reverse = False)
 
 	def submit_bid(self, bid):
@@ -67,7 +71,7 @@ def main():
 
 	# Bid book
 	bid_book = Book("bid")
-	# bid_book.set_priorities("price", "visibility")
+	bid_book.set_priorities("price", "visibility")
 	bid_book.submit_bid(amy_bid)
 	bid_book.submit_bid(brian_bid)
 	bid_book.submit_bid(chao_bid)
@@ -77,7 +81,7 @@ def main():
 
 	# Offer book
 	offer_book = Book("offer")
-	# offer_book.set_priorities("price", "visibility")
+	offer_book.set_priorities("price", "visibility")
 	offer_book.submit_bid(gregori_offer)
 	offer_book.submit_bid(haley_offer)
 	offer_book.submit_bid(inez_offer)
